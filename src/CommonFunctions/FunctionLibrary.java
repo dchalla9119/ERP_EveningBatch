@@ -60,7 +60,7 @@ public class FunctionLibrary {
 		}
 		else if(locatortype.equalsIgnoreCase("id"))
 		{
-			myWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id(locatorvalue)));
+			myWait.until(ExpectedConditions.visibilityOfElementLocated(By.id(locatorvalue)));
 		}
 	}
 
