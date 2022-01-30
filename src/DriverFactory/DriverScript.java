@@ -61,6 +61,14 @@ public void startTest() throws Throwable
 					{
 						FunctionLibrary.closeBrowser(driver);
 					}
+					else if(FunctionName.equalsIgnoreCase("captureData"))
+					{
+						FunctionLibrary.captureData(driver, LocatorType, LocatorValue);
+					}
+					else if(FunctionName.equalsIgnoreCase("suppliertable"))
+					{
+						FunctionLibrary.suppliertable(driver, TestData);
+					}
 					//write as pass into status cell in TCModule
 					xl.setCellData(TCModule, j, 5, "Pass", outputpath);
 					moduleStatus = "True";
