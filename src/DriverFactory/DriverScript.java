@@ -2,6 +2,10 @@ package DriverFactory;
 
 import org.openqa.selenium.WebDriver;
 
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
+
 import CommonFunctions.FunctionLibrary;
 import Utilities.ExcelFileUtil;
 
@@ -9,6 +13,9 @@ public class DriverScript {
 WebDriver driver;
 String inputpath ="C:\\Users\\Dileep.Challa\\OneDrive\\Desktop\\eclipse december 2021\\Hybrid_ERP\\TestInput\\HybridData.xlsx";
 String outputpath ="C:\\Users\\Dileep.Challa\\OneDrive\\Desktop\\eclipse december 2021\\Hybrid_ERP\\TestOutput\\HybridResults.xlsx";
+ExtentReports report;
+ExtentTest test;
+
 public void startTest() throws Throwable
 {
 	//to access excel methods
@@ -21,9 +28,12 @@ public void startTest() throws Throwable
 		{
 			//store corresponding sheet into TCModule
 			String TCModule = xl.getCellData("MasterTestCases", i, 1);
+			//define path for html
+			report = new ExtentReports("./Reports/"+TCModule+FunctionLibrary.generateDate()+"     "+".html");//to generate reports
 			//iterate all in TCModule sheet
 			for(int j=1; j<=xl.rowCount(TCModule); j++)
 			{
+				test = report.startTest(TCModule);
 				//read all cells from TCModule
 				String Description = xl.getCellData(TCModule, j, 0);
 				String FunctionName = xl.getCellData(TCModule, j, 1);
@@ -36,41 +46,62 @@ public void startTest() throws Throwable
 					if(FunctionName.equalsIgnoreCase("startBrowser"))
 					{
 						driver = FunctionLibrary.startBrowser();
+						test.log(LogStatus.INFO, Description);
 					}
 					else if(FunctionName.equalsIgnoreCase("openApplication"))
 					{
 						FunctionLibrary.openApplication(driver);
+						test.log(LogStatus.INFO, Description);
 					}
 					else if(FunctionName.equalsIgnoreCase("waitForElement"))
 					{
 						FunctionLibrary.waitForElement(driver, LocatorType, LocatorValue, TestData);
+						test.log(LogStatus.INFO, Description);
 					}
 					else if(FunctionName.equalsIgnoreCase("typeAction"))
 					{
 						FunctionLibrary.typeAction(driver, LocatorType, LocatorValue, TestData);
+						test.log(LogStatus.INFO, Description);
 					}
 					else if(FunctionName.equalsIgnoreCase("clickAction"))
 					{
 						FunctionLibrary.clickAction(driver, LocatorType, LocatorValue);
+						test.log(LogStatus.INFO, Description);
 					}
 					else if(FunctionName.equalsIgnoreCase("validateTitle"))
 					{
 						FunctionLibrary.validateTitle(driver, TestData);
+						test.log(LogStatus.INFO, Description);
 					}
 					else if(FunctionName.equalsIgnoreCase("closeBrowser"))
 					{
 						FunctionLibrary.closeBrowser(driver);
+						test.log(LogStatus.INFO, Description);
 					}
 					else if(FunctionName.equalsIgnoreCase("captureData"))
 					{
 						FunctionLibrary.captureData(driver, LocatorType, LocatorValue);
+						test.log(LogStatus.INFO, Description);
 					}
 					else if(FunctionName.equalsIgnoreCase("suppliertable"))
 					{
 						FunctionLibrary.suppliertable(driver, TestData);
+						test.log(LogStatus.INFO, Description);
 					}
+					else if(FunctionName.equalsIgnoreCase("mouseOver"))
+					{
+						FunctionLibrary.mouseOver(driver);
+						test.log(LogStatus.INFO, Description);
+					}
+					else if(FunctionName.equalsIgnoreCase("stockTable"))
+					{
+						FunctionLibrary.stockTable(driver, TestData);
+						test.log(LogStatus.INFO, Description);
+					}
+				
 					//write as pass into status cell in TCModule
 					xl.setCellData(TCModule, j, 5, "Pass", outputpath);
+					test.log(LogStatus.PASS, Description);
 					moduleStatus = "True";
 					
 				}
@@ -79,6 +110,7 @@ public void startTest() throws Throwable
 					System.out.println(t.getMessage());
 					//write as fail into status cell in TCModule
 					xl.setCellData(TCModule, j, 5, "Fail", outputpath);
+					test.log(LogStatus.FAIL, Description);
 					moduleStatus = "False";
 				}
 				if(moduleStatus.equalsIgnoreCase("True"))
@@ -89,6 +121,8 @@ public void startTest() throws Throwable
 				{
 					xl.setCellData("MasterTestCases", i, 3, "Fail", outputpath);
 				}
+				report.endTest(test);
+				report.flush();
 			}
 		}
 		else

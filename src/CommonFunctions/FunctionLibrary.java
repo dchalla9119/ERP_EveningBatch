@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -12,6 +15,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -169,6 +173,47 @@ public class FunctionLibrary {
 			break;
 			
 		}
+		
+	}
+	
+	//method for mouse over operation
+	public static void mouseOver(WebDriver driver) throws Throwable
+	{
+		Actions ac = new Actions(driver);
+		ac.moveToElement(driver.findElement(By.xpath("//body/div[2]/div[2]/div[1]/div[1]/ul[1]/li[2]/a[1]"))).perform();
+		Thread.sleep(4000);
+		ac.moveToElement(driver.findElement(By.xpath("//body/div[2]/div[2]/div[1]/div[1]/ul[1]/li[2]/ul[1]/li[1]/a[1]"))).click().perform();
+		
+		
+	}
+	
+	//method for stock table
+	public static void stockTable(WebDriver driver,String testData) throws Throwable
+	{
+		
+		if(!driver.findElement(By.xpath(PropertyFileUtil.getValueForKey("search-textbox"))).isDisplayed())
+			driver.findElement(By.xpath(PropertyFileUtil.getValueForKey("search-panel"))).click();
+		driver.findElement(By.xpath(PropertyFileUtil.getValueForKey("search-textbox"))).clear();
+		driver.findElement(By.xpath(PropertyFileUtil.getValueForKey("search-textbox"))).sendKeys(testData);
+		driver.findElement(By.xpath(PropertyFileUtil.getValueForKey("search-button"))).click();
+		Thread.sleep(5000);
+		WebElement table = driver.findElement(By.xpath(PropertyFileUtil.getValueForKey("web-table1")));
+		List<WebElement> rows = table.findElements(By.tagName("tr"));
+		for(int i=1;i<rows.size();i++)
+		{
+			String actualdata = driver.findElement(By.xpath("//table[@id='tbl_a_stock_categorieslist']/tbody/tr/td[4]/div/span/span")).getText();
+			Assert.assertEquals(testData, actualdata,"Category Name is not matching");
+			break;
+		}
+	}
+	
+	//while generating report i want date and time
+	//date and time method
+	public static String generateDate()
+	{
+		Date date = new Date();
+		DateFormat df = new SimpleDateFormat("yyyy_mm_dd    hh_mm_ss");
+		return df.format(date);
 		
 	}
 }
